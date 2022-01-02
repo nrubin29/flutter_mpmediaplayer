@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:flutter_mpmediaplayer/flutter_mpmediaplayer.dart';
 
@@ -9,14 +7,16 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp();
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  AuthorizationStatus? _authorizationStatus;
+  List<PlayedSong>? _playedSongs;
+  String? _error;
 
   @override
   void initState() {
@@ -26,37 +26,65 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    AuthorizationStatus? authorizationStatus;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await FlutterMPMediaPlayer.platformVersion ?? 'Unknown platform version';
+      authorizationStatus = await FlutterMPMediaPlayer.authorize();
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      _error = 'Failed to authorize.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+    if (authorizationStatus != null) {
+      setState(() {
+        _authorizationStatus = authorizationStatus;
+      });
+    }
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+    List<PlayedSong>? playedSongs;
+
+    if (authorizationStatus == AuthorizationStatus.authorized) {
+      try {
+        playedSongs = await FlutterMPMediaPlayer.getRecentTracks();
+      } on PlatformException {
+        _error = 'Failed to get played songs.';
+      }
+    }
+
+    if (playedSongs != null) {
+      setState(() {
+        _playedSongs = playedSongs;
+      });
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
+  Widget build(BuildContext context) => MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: const Text('FlutterMPMediaPlayer Example App'),
+          ),
+          body: ListView(
+            children: [
+              if (_error != null)
+                ListTile(title: Text(_error!))
+              else ...[
+                ListTile(
+                  title: Text(
+                      'Authorization status: ${_authorizationStatus?.name}'),
+                ),
+                if (_playedSongs != null)
+                  for (final song in _playedSongs!)
+                    ListTile(
+                      title: Text(song.title),
+                      subtitle: Text([song.artist, song.album]
+                          .whereType<String>()
+                          .join(' • ')),
+                      trailing: Text('${song.lastPlayedDate}'),
+                    ),
+              ],
+            ],
+          ),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
-    );
-  }
+      );
 }

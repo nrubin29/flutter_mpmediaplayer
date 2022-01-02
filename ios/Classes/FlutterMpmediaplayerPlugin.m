@@ -10,6 +10,6 @@
 
 @implementation FlutterMpmediaplayerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftFlutterMpmediaplayerPlugin registerWithRegistrar:registrar];
+  [SwiftFlutterMPMediaPlayerPlugin registerWithRegistrar:registrar];
 }
 @end
