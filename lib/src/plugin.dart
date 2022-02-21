@@ -23,6 +23,19 @@ class FlutterMPMediaPlayer {
     return AuthorizationStatus.values[response];
   }
 
+  /// Returns whether the app can access the user's media library.
+  ///
+  /// Use [authorize] to request access.
+  static Future<AuthorizationStatus> get authorizationStatus async {
+    final response = await _channel.invokeMethod<int>('authorizationStatus');
+
+    if (response == null) {
+      throw PlatformException(code: "NULL_RESPONSE");
+    }
+
+    return AuthorizationStatus.values[response];
+  }
+
   /// Fetches a list of [PlayedSong]s.
   ///
   /// This method will only return songs that are stored on the user's device,

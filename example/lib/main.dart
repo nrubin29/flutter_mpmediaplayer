@@ -21,11 +21,27 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    AuthorizationStatus? initialStatus;
+
+    try {
+      initialStatus = await FlutterMPMediaPlayer.authorizationStatus;
+    } on PlatformException {
+      _error = 'Failed to get initial authorization status';
+    }
+
+    if (initialStatus != null) {
+      setState(() {
+        _authorizationStatus = initialStatus;
+      });
+    }
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
+  Future<void> _authorize() async {
     AuthorizationStatus? authorizationStatus;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
@@ -72,6 +88,10 @@ class _MyAppState extends State<MyApp> {
                 ListTile(
                   title: Text(
                       'Authorization status: ${_authorizationStatus?.name}'),
+                ),
+                TextButton(
+                  onPressed: _authorize,
+                  child: const Text('Authorize'),
                 ),
                 if (_playedSongs != null)
                   for (final song in _playedSongs!)

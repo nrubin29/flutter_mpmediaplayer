@@ -34,6 +34,12 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             
             return
         }
+
+        else if call.method == "authorizationStatus" {
+            result(MPMediaLibrary.authorizationStatus().rawValue)
+
+            return
+        }
         
         else if call.method == "getRecentTracks" {
             var after: Date?
