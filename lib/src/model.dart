@@ -18,3 +18,11 @@ class PlayedSong {
         lastPlayedDate = DateTime.fromMillisecondsSinceEpoch(
             (json['lastPlayedDate'] as num).truncate());
 }
+
+class Playlist {
+  final String title;
+
+  const Playlist(this.title);
+
+  Playlist.fromJson(dynamic json) : title = json['title'] as String;
+}
