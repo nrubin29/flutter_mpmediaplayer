@@ -36,6 +36,19 @@ class FlutterMPMediaPlayer {
     return AuthorizationStatus.values[response];
   }
 
+  static Future<List<Song>> searchSongs(
+      String query, int limit, int page) async {
+    final jsonString = await _channel.invokeMethod<String>(
+        'searchSongs', {'query': query, 'limit': limit, 'page': page});
+
+    if (jsonString == null) {
+      throw PlatformException(code: 'NULL_RESPONSE');
+    }
+
+    final jsonObject = json.decode(jsonString) as List<dynamic>;
+    return jsonObject.map(Song.fromJson).toList(growable: false);
+  }
+
   static Future<List<Playlist>> searchPlaylists(
       String query, int limit, int page) async {
     final jsonString = await _channel.invokeMethod<String>(

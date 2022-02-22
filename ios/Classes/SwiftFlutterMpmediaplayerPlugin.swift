@@ -8,11 +8,17 @@ private struct PlayedSong : Encodable {
     let lastPlayedDate: Date
 }
 
-struct Playlist : Encodable {
+private struct Song : Encodable {
+    let title: String
+    let artist: String
+    let album: String?
+}
+
+private struct Playlist : Encodable {
     let title: String
 }
 
-struct SearchRequest {
+private struct SearchRequest {
     let query: String
     let limit: Int
     let page: Int
@@ -64,6 +70,28 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
         else if call.method == "authorizationStatus" {
             result(MPMediaLibrary.authorizationStatus().rawValue)
 
+            return
+        }
+        
+        else if call.method == "searchSongs" {
+            guard let request = SearchRequest(call.arguments) else {
+                result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
+                return
+            }
+            
+            let query = MPMediaQuery.songs()
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
+            
+            let items = query.items!.filter { item in
+                item.title != nil && item.artist != nil
+            }.map { item in
+                Song(title: item.title!, artist: item.artist!, album: item.albumTitle)
+            }
+            
+            let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+            result(jsonString)
+            
             return
         }
         

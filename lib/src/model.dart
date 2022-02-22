@@ -2,21 +2,30 @@ library flutter_mpmediaplayer;
 
 enum AuthorizationStatus { notDetermined, denied, restricted, authorized }
 
-class PlayedSong {
+class Song {
   final String title;
   final String artist;
   final String? album;
-  final DateTime lastPlayedDate;
 
-  const PlayedSong(this.title,
-      {required this.artist, this.album, required this.lastPlayedDate});
+  const Song(this.title, {required this.artist, this.album});
 
-  PlayedSong.fromJson(dynamic json)
+  Song.fromJson(dynamic json)
       : title = json['title'] as String,
         artist = json['artist'] as String,
-        album = json['album'] as String?,
-        lastPlayedDate = DateTime.fromMillisecondsSinceEpoch(
-            (json['lastPlayedDate'] as num).truncate());
+        album = json['album'] as String?;
+}
+
+class PlayedSong extends Song {
+  final DateTime lastPlayedDate;
+
+  const PlayedSong(String title,
+      {required String artist, String? album, required this.lastPlayedDate})
+      : super(title, artist: artist, album: album);
+
+  PlayedSong.fromJson(dynamic json)
+      : lastPlayedDate = DateTime.fromMillisecondsSinceEpoch(
+            (json['lastPlayedDate'] as num).truncate()),
+        super.fromJson(json);
 }
 
 class Playlist {
