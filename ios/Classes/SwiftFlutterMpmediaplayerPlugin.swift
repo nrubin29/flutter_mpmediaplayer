@@ -12,6 +12,22 @@ struct Playlist : Encodable {
     let title: String
 }
 
+struct SearchRequest {
+    let query: String
+    let limit: Int
+    let page: Int
+    
+    init?(_ arguments: Any?) {
+        guard let args = arguments as? [String: Any], let queryString = args["query"] as? String, let limit = args["limit"] as? Int, let page = args["page"] as? Int else {
+            return nil
+        }
+        
+        self.query = queryString
+        self.limit = limit
+        self.page = page
+    }
+}
+
 extension Array {
     func getPage(_ limit: Int, _ page: Int) -> ArraySlice<Element> {
         return self[(page - 1) * limit..<Swift.min(page * limit, count)]
@@ -52,15 +68,15 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
         }
         
         else if call.method == "searchPlaylists" {
-            guard let args = call.arguments as? [String: Any], let queryString = args["query"] as? String, let limit = args["limit"] as? Int, let page = args["page"] as? Int else {
-                result(nil)
+            guard let request = SearchRequest(call.arguments) else {
+                result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
                 return
             }
             
             let query = MPMediaQuery.playlists()
-            query.addFilterPredicate(MPMediaPropertyPredicate(value: queryString, forProperty: MPMediaPlaylistPropertyName, comparisonType: .contains))
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaPlaylistPropertyName, comparisonType: .contains))
             
-            let items = query.collections!.getPage(limit, page).map { item in Playlist(title: item.value(forProperty: MPMediaPlaylistPropertyName)! as! String) }
+            let items = query.collections!.getPage(request.limit, request.page).map { item in Playlist(title: item.value(forProperty: MPMediaPlaylistPropertyName)! as! String) }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
             let jsonString = String(data: jsonData, encoding: .utf8)!
