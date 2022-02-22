@@ -1,18 +1,26 @@
 library flutter_mpmediaplayer;
 
+import 'dart:convert';
+import 'dart:typed_data';
+
+Uint8List? _decodeData(String? data) =>
+    data == null ? null : base64Decode(data);
+
 enum AuthorizationStatus { notDetermined, denied, restricted, authorized }
 
 class Song {
   final String title;
   final String artist;
   final String? album;
+  final Uint8List? artwork;
 
-  const Song(this.title, {required this.artist, this.album});
+  const Song(this.title, {required this.artist, this.album, this.artwork});
 
   Song.fromJson(dynamic json)
       : title = json['title'] as String,
         artist = json['artist'] as String,
-        album = json['album'] as String?;
+        album = json['album'] as String?,
+        artwork = _decodeData(json['artwork'] as String?);
 }
 
 class PlayedSong extends Song {
