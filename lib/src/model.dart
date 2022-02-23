@@ -50,16 +50,37 @@ class PlayedSong extends Song {
 }
 
 class Album {
+  final String id;
   final String title;
   final String artist;
   final Uint8List? artwork;
 
-  const Album(this.title, {required this.artist, this.artwork});
+  const Album(this.title,
+      {required this.id, required this.artist, this.artwork});
 
   Album.fromJson(dynamic json)
       : title = json['title'] as String,
+        id = json['id'] as String,
         artist = json['artist'] as String,
         artwork = _decodeData(json['artwork'] as String?);
+}
+
+class FullAlbum extends Album {
+  final List<Song> tracks;
+
+  const FullAlbum(
+    String title, {
+    required String id,
+    required String artist,
+    Uint8List? artwork,
+    required this.tracks,
+  }) : super(title, id: id, artist: artist, artwork: artwork);
+
+  FullAlbum.fromJson(dynamic json)
+      : tracks = (json['tracks'] as List<dynamic>)
+            .map(Song.fromJson)
+            .toList(growable: false),
+        super.fromJson(json);
 }
 
 class Artist {
