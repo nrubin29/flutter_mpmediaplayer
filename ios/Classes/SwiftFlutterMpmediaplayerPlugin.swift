@@ -94,7 +94,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let query = MPMediaQuery.songs()
             query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
             
-            let items = query.items!.filter { item in
+            let items = query.items!.getPage(request.limit, request.page).filter { item in
                 item.title != nil && item.artist != nil
             }.map { item in
                 Song(title: item.title!, artist: item.artist!, album: item.albumTitle, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
@@ -116,7 +116,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let query = MPMediaQuery.albums()
             query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
             
-            let items = query.items!.filter { item in
+            let items = query.items!.getPage(request.limit, request.page).filter { item in
                 item.title != nil && item.artist != nil
             }.map { item in
                 Album(title: item.title!, artist: item.artist!, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
