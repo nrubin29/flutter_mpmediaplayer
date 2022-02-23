@@ -100,6 +100,19 @@ class FlutterMPMediaPlayer {
     return jsonObject.map(Playlist.fromJson).toList(growable: false);
   }
 
+  static Future<List<Song>> getPlaylistSongs(
+      String playlistId, int limit, int page) async {
+    final jsonString = await _channel.invokeMethod<String>('getPlaylistSongs',
+        {'query': playlistId, 'limit': limit, 'page': page});
+
+    if (jsonString == null) {
+      throw PlatformException(code: 'NULL_RESPONSE');
+    }
+
+    final jsonObject = json.decode(jsonString) as List<dynamic>;
+    return jsonObject.map(Song.fromJson).toList(growable: false);
+  }
+
   /// Fetches a list of [PlayedSong]s.
   ///
   /// This method will only return songs that are stored on the user's device,

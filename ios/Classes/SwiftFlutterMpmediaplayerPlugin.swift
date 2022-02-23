@@ -37,6 +37,7 @@ private struct Artist : Encodable {
 }
 
 private struct Playlist : Encodable {
+    let id: String
     let title: String
 }
 
@@ -115,11 +116,31 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let mpAlbum = query.collections!.first!.representativeItem!
             let mpTracks = query.items!
             
-            let tracks = mpTracks.map {item in Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: item.playbackDuration, artwork: mpAlbum.artworkData)}
+            let tracks = mpTracks.map {item in Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: item.playbackDuration, artwork: item.artworkData)}
             
             let album = FullAlbum(id: String(mpAlbum.albumPersistentID), title: mpAlbum.albumTitle!, artist: mpAlbum.artist!, artwork: mpAlbum.artworkData, tracks: tracks)
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(album)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+            result(jsonString)
+            
+            return
+        }
+        
+        else if call.method == "getPlaylistSongs" {
+            guard let request = SearchRequest(call.arguments) else {
+                result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
+                return
+            }
+            
+            let query = MPMediaQuery.playlists()
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: MPMediaEntityPersistentID(request.query), forProperty: MPMediaPlaylistPropertyPersistentID, comparisonType: .equalTo))
+            
+            let items = query.items!.getPage(request.limit, request.page).map { item in
+                Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: item.playbackDuration, artwork: item.artworkData)
+            }
+            
+            let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
             let jsonString = String(data: jsonData, encoding: .utf8)!
             result(jsonString)
             
@@ -199,7 +220,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let query = MPMediaQuery.playlists()
             query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaPlaylistPropertyName, comparisonType: .contains))
             
-            let items = query.collections!.getPage(request.limit, request.page).map { item in Playlist(title: item.value(forProperty: MPMediaPlaylistPropertyName)! as! String) }
+            let items = query.collections!.getPage(request.limit, request.page).map { item in Playlist(id: String(item.value(forProperty: MPMediaPlaylistPropertyPersistentID) as! MPMediaEntityPersistentID), title: item.value(forProperty: MPMediaPlaylistPropertyName)! as! String) }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
             let jsonString = String(data: jsonData, encoding: .utf8)!

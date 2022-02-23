@@ -95,9 +95,12 @@ class Artist {
 }
 
 class Playlist {
+  final String id;
   final String title;
 
-  const Playlist(this.title);
+  const Playlist(this.id, this.title);
 
-  Playlist.fromJson(dynamic json) : title = json['title'] as String;
+  Playlist.fromJson(dynamic json)
+      : id = json['id'] as String,
+        title = json['title'] as String;
 }
