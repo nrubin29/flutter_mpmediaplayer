@@ -12,23 +12,36 @@ class Song {
   final String title;
   final String artist;
   final String? album;
+  final double playbackDuration;
   final Uint8List? artwork;
 
-  const Song(this.title, {required this.artist, this.album, this.artwork});
+  const Song(
+    this.title, {
+    required this.artist,
+    this.album,
+    required this.playbackDuration,
+    this.artwork,
+  });
 
   Song.fromJson(dynamic json)
       : title = json['title'] as String,
         artist = json['artist'] as String,
         album = json['album'] as String?,
+        playbackDuration = json['playbackDuration'] as double,
         artwork = _decodeData(json['artwork'] as String?);
 }
 
 class PlayedSong extends Song {
   final DateTime lastPlayedDate;
 
-  const PlayedSong(String title,
-      {required String artist, String? album, required this.lastPlayedDate})
-      : super(title, artist: artist, album: album);
+  const PlayedSong(
+    String title, {
+    required String artist,
+    String? album,
+    required double playbackDuration,
+    required this.lastPlayedDate,
+  }) : super(title,
+            artist: artist, album: album, playbackDuration: playbackDuration);
 
   PlayedSong.fromJson(dynamic json)
       : lastPlayedDate = DateTime.fromMillisecondsSinceEpoch(

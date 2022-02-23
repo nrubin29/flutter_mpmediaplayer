@@ -12,6 +12,7 @@ private struct Song : Encodable {
     let title: String
     let artist: String
     let album: String?
+    let playbackDuration: Double
     let artwork: String?
 }
 
@@ -97,7 +98,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let items = query.items!.getPage(request.limit, request.page).filter { item in
                 item.title != nil && item.artist != nil
             }.map { item in
-                Song(title: item.title!, artist: item.artist!, album: item.albumTitle, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
+                Song(title: item.title!, artist: item.artist!, album: item.albumTitle, playbackDuration: item.playbackDuration, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
