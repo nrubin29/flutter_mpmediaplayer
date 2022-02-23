@@ -49,6 +49,17 @@ class Album {
         artwork = _decodeData(json['artwork'] as String?);
 }
 
+class Artist {
+  final String name;
+  final Uint8List? artwork;
+
+  const Artist(this.name, {this.artwork});
+
+  Artist.fromJson(dynamic json)
+      : name = json['name'] as String,
+        artwork = _decodeData(json['artwork'] as String?);
+}
+
 class Playlist {
   final String title;
 
