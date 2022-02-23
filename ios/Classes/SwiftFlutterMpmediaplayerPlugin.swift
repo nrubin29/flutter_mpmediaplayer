@@ -136,12 +136,11 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             }
             
             let query = MPMediaQuery.artists()
-            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyArtist, comparisonType: .contains))
             
-            let items = query.items!.getPage(request.limit, request.page).filter { item in
-                item.title != nil
-            }.map { item in
-                Artist(name: item.title!, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
+            let items = query.collections!.getPage(request.limit, request.page).map { item -> Artist in
+                let repItem = item.representativeItem!
+                return Artist(name: repItem.artist!, artwork:  repItem.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
