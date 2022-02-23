@@ -36,6 +36,19 @@ class PlayedSong extends Song {
         super.fromJson(json);
 }
 
+class Album {
+  final String title;
+  final String artist;
+  final Uint8List? artwork;
+
+  const Album(this.title, {required this.artist, this.artwork});
+
+  Album.fromJson(dynamic json)
+      : title = json['title'] as String,
+        artist = json['artist'] as String,
+        artwork = _decodeData(json['artwork'] as String?);
+}
+
 class Playlist {
   final String title;
 

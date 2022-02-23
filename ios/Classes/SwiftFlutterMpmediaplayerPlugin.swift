@@ -15,6 +15,12 @@ private struct Song : Encodable {
     let artwork: String?
 }
 
+private struct Album : Encodable {
+    let title: String
+    let artist: String
+    let artwork: String?
+}
+
 private struct Playlist : Encodable {
     let title: String
 }
@@ -87,6 +93,28 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
                 item.title != nil && item.artist != nil
             }.map { item in
                 Song(title: item.title!, artist: item.artist!, album: item.albumTitle, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
+            }
+            
+            let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+            result(jsonString)
+            
+            return
+        }
+        
+        else if call.method == "searchAlbums" {
+            guard let request = SearchRequest(call.arguments) else {
+                result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
+                return
+            }
+            
+            let query = MPMediaQuery.albums()
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
+            
+            let items = query.items!.filter { item in
+                item.title != nil && item.artist != nil
+            }.map { item in
+                Album(title: item.title!, artist: item.artist!, artwork: item.artwork?.image(at: CGSize(width: 300, height: 300))?.pngData()?.base64EncodedString())
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
