@@ -48,10 +48,18 @@ class FlutterMPMediaPlayer {
     return FullAlbum.fromJson(jsonObject);
   }
 
-  static Future<List<Song>> searchSongs(
-      String query, int limit, int page) async {
-    final jsonString = await _channel.invokeMethod<String>(
-        'searchSongs', {'query': query, 'limit': limit, 'page': page});
+  static Future<List<Song>> searchSongs({
+    String? query,
+    String? artistId,
+    required int limit,
+    required int page,
+  }) async {
+    final jsonString = await _channel.invokeMethod<String>('searchSongs', {
+      if (query != null) 'query': query,
+      if (artistId != null) 'artistId': artistId,
+      'limit': limit,
+      'page': page,
+    });
 
     if (jsonString == null) {
       throw PlatformException(code: 'NULL_RESPONSE');
@@ -61,10 +69,18 @@ class FlutterMPMediaPlayer {
     return jsonObject.map(Song.fromJson).toList(growable: false);
   }
 
-  static Future<List<Album>> searchAlbums(
-      String query, int limit, int page) async {
-    final jsonString = await _channel.invokeMethod<String>(
-        'searchAlbums', {'query': query, 'limit': limit, 'page': page});
+  static Future<List<Album>> searchAlbums({
+    String? query,
+    String? artistId,
+    required int limit,
+    required int page,
+  }) async {
+    final jsonString = await _channel.invokeMethod<String>('searchAlbums', {
+      if (query != null) 'query': query,
+      if (artistId != null) 'artistId': artistId,
+      'limit': limit,
+      'page': page,
+    });
 
     if (jsonString == null) {
       throw PlatformException(code: 'NULL_RESPONSE');

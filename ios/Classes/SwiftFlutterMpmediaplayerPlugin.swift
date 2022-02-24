@@ -43,18 +43,25 @@ private struct Playlist : Encodable {
 }
 
 private struct SearchRequest {
-    let query: String
+    let query: String?
+    let artistId: MPMediaEntityPersistentID?
     let limit: Int
     let page: Int
     
     init?(_ arguments: Any?) {
-        guard let args = arguments as? [String: Any], let queryString = args["query"] as? String, let limit = args["limit"] as? Int, let page = args["page"] as? Int else {
+        guard let args = arguments as? [String: Any], let query = args["query"] as? String?, let artistId = args["artistId"] as? String?, let limit = args["limit"] as? Int, let page = args["page"] as? Int else {
             return nil
         }
         
-        self.query = queryString
+        self.query = query
         self.limit = limit
         self.page = page
+        
+        if let artistId = artistId {
+            self.artistId = MPMediaEntityPersistentID(artistId)
+        } else {
+            self.artistId = nil
+        }
     }
 }
 
@@ -135,7 +142,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             }
             
             let query = MPMediaQuery.playlists()
-            query.addFilterPredicate(MPMediaPropertyPredicate(value: MPMediaEntityPersistentID(request.query), forProperty: MPMediaPlaylistPropertyPersistentID, comparisonType: .equalTo))
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: MPMediaEntityPersistentID(request.query!), forProperty: MPMediaPlaylistPropertyPersistentID, comparisonType: .equalTo))
             
             let items = query.items!.getPage(request.limit, request.page).map { item in
                 Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: item.playbackDuration, artwork: item.artworkData)
@@ -155,7 +162,14 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             }
             
             let query = MPMediaQuery.songs()
-            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
+            
+            if let queryString = request.query {
+                query.addFilterPredicate(MPMediaPropertyPredicate(value: queryString, forProperty: MPMediaItemPropertyTitle, comparisonType: .contains))
+            }
+            
+            if let artistId = request.artistId {
+                query.addFilterPredicate(MPMediaPropertyPredicate(value: artistId, forProperty: MPMediaItemPropertyArtistPersistentID, comparisonType: .equalTo))
+            }
             
             let items = query.items!.getPage(request.limit, request.page).filter { item in
                 item.title != nil && item.artist != nil
@@ -177,7 +191,14 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             }
             
             let query = MPMediaQuery.albums()
-            query.addFilterPredicate(MPMediaPropertyPredicate(value: request.query, forProperty: MPMediaItemPropertyAlbumTitle, comparisonType: .contains))
+            
+            if let queryString = request.query {
+                query.addFilterPredicate(MPMediaPropertyPredicate(value: queryString, forProperty: MPMediaItemPropertyAlbumTitle, comparisonType: .contains))
+            }
+            
+            if let artistId = request.artistId {
+                query.addFilterPredicate(MPMediaPropertyPredicate(value: artistId, forProperty: MPMediaItemPropertyArtistPersistentID, comparisonType: .equalTo))
+            }
             
             let items = query.collections!.getPage(request.limit, request.page).map { item -> Album in
                 let repItem = item.representativeItem!
