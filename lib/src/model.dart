@@ -27,7 +27,7 @@ class Song {
       : title = json['title'] as String,
         artist = json['artist'] as String,
         album = json['album'] as String?,
-        playbackDuration = json['playbackDuration'] as double,
+        playbackDuration = double.parse(json['playbackDuration'] as String),
         artwork = _decodeData(json['artwork'] as String?);
 }
 
