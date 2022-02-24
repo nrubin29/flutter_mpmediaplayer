@@ -1,6 +1,6 @@
 name: flutter_mpmediaplayer
 description: A plugin to interface with MPMediaPlayer on iOS/iPadOS.
-version: 0.0.2
+version: 0.1.0
 homepage: "https://github.com/nrubin29/flutter_mpmediaplayer"
 
 environment:
