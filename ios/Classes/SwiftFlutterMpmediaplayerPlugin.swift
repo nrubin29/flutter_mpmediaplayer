@@ -20,6 +20,7 @@ private struct Album : Encodable {
     let id: String
     let title: String
     let artist: String
+    let artistId: String
     let artwork: String?
 }
 
@@ -27,6 +28,7 @@ private struct FullAlbum : Encodable {
     let id: String
     let title: String
     let artist: String
+    let artistId: String
     let artwork: String?
     let tracks: [Song]
 }
@@ -126,7 +128,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             
             let tracks = mpTracks.map {item in Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: item.playbackDuration, artwork: item.artworkData)}
             
-            let album = FullAlbum(id: String(mpAlbum.albumPersistentID), title: mpAlbum.albumTitle!, artist: mpAlbum.artist!, artwork: mpAlbum.artworkData, tracks: tracks)
+            let album = FullAlbum(id: String(mpAlbum.albumPersistentID), title: mpAlbum.albumTitle!, artist: mpAlbum.artist!, artistId: String(mpAlbum.artistPersistentID), artwork: mpAlbum.artworkData, tracks: tracks)
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(album)
             let jsonString = String(data: jsonData, encoding: .utf8)!
@@ -202,7 +204,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             
             let items = query.collections!.getPage(request.limit, request.page).map { item -> Album in
                 let repItem = item.representativeItem!
-                return Album(id: String(repItem.albumPersistentID), title: repItem.albumTitle!, artist: repItem.artist!, artwork: repItem.artworkData)
+                return Album(id: String(repItem.albumPersistentID), title: repItem.albumTitle!, artist: repItem.artist!, artistId: String(repItem.artistPersistentID), artwork: repItem.artworkData)
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)

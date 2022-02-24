@@ -53,15 +53,22 @@ class Album {
   final String id;
   final String title;
   final String artist;
+  final String artistId;
   final Uint8List? artwork;
 
-  const Album(this.title,
-      {required this.id, required this.artist, this.artwork});
+  const Album(
+    this.title, {
+    required this.id,
+    required this.artist,
+    required this.artistId,
+    this.artwork,
+  });
 
   Album.fromJson(dynamic json)
       : title = json['title'] as String,
         id = json['id'] as String,
         artist = json['artist'] as String,
+        artistId = json['artistId'] as String,
         artwork = _decodeData(json['artwork'] as String?);
 }
 
@@ -72,9 +79,11 @@ class FullAlbum extends Album {
     String title, {
     required String id,
     required String artist,
+    required String artistId,
     Uint8List? artwork,
     required this.tracks,
-  }) : super(title, id: id, artist: artist, artwork: artwork);
+  }) : super(title,
+            id: id, artist: artist, artistId: artistId, artwork: artwork);
 
   FullAlbum.fromJson(dynamic json)
       : tracks = (json['tracks'] as List<dynamic>)
