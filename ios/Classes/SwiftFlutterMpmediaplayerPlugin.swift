@@ -137,6 +137,25 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             return
         }
         
+        else if call.method == "getArtist" {
+            guard let args = call.arguments as? [String: Any], let id = args["id"] as? String else {
+                result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
+                return
+            }
+            
+            let query = MPMediaQuery.artists()
+            query.addFilterPredicate(MPMediaPropertyPredicate(value: MPMediaEntityPersistentID(id), forProperty: MPMediaItemPropertyArtistPersistentID, comparisonType: .equalTo))
+            
+            let mpArtist = query.collections!.first!.representativeItem!
+            let artist = Artist(id: String(mpArtist.artistPersistentID), name: mpArtist.artist!, artwork: mpArtist.artworkData)
+            
+            let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(artist)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+            result(jsonString)
+            
+            return
+        }
+        
         else if call.method == "getPlaylistSongs" {
             guard let request = SearchRequest(call.arguments) else {
                 result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
