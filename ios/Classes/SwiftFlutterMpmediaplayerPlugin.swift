@@ -32,6 +32,7 @@ private struct FullAlbum : Encodable {
 }
 
 private struct Artist : Encodable {
+    let id: String
     let name: String
     let artwork: String?
 }
@@ -201,7 +202,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             
             let items = query.collections!.getPage(request.limit, request.page).map { item -> Artist in
                 let repItem = item.representativeItem!
-                return Artist(name: repItem.artist!, artwork: repItem.artworkData)
+                return Artist(id: String(repItem.artistPersistentID), name: repItem.artist!, artwork: repItem.artworkData)
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)

@@ -84,13 +84,15 @@ class FullAlbum extends Album {
 }
 
 class Artist {
+  final String id;
   final String name;
   final Uint8List? artwork;
 
-  const Artist(this.name, {this.artwork});
+  const Artist(this.name, {required this.id, this.artwork});
 
   Artist.fromJson(dynamic json)
       : name = json['name'] as String,
+        id = json['id'] as String,
         artwork = _decodeData(json['artwork'] as String?);
 }
 
