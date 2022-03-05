@@ -39,9 +39,13 @@ class PlayedSong extends Song {
     required String artist,
     String? album,
     required double playbackDuration,
+    Uint8List? artwork,
     required this.lastPlayedDate,
   }) : super(title,
-            artist: artist, album: album, playbackDuration: playbackDuration);
+            artist: artist,
+            album: album,
+            playbackDuration: playbackDuration,
+            artwork: artwork);
 
   PlayedSong.fromJson(dynamic json)
       : lastPlayedDate = DateTime.fromMillisecondsSinceEpoch(

@@ -5,6 +5,8 @@ private struct PlayedSong : Encodable {
     let title: String
     let artist: String
     let album: String?
+    let playbackDuration: String
+    let artwork: String?
     let lastPlayedDate: Date
 }
 
@@ -289,7 +291,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             }.sorted { a, b in
                 a.lastPlayedDate!.compare(b.lastPlayedDate!) == .orderedDescending
             }.map { item in
-                PlayedSong(title: item.title!, artist: item.artist!, album: item.albumTitle, lastPlayedDate: item.lastPlayedDate!)
+                PlayedSong(title: item.title!, artist: item.artist!, album: item.albumTitle, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low), lastPlayedDate: item.lastPlayedDate!)
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)

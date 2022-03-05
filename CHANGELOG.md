@@ -1,3 +1,7 @@
+## 0.1.2
+
+Fixed `PlayedSong` missing `playbackDuration` and `artwork`.
+
 ## 0.1.1
 
 Updated image sizes.
