@@ -61,7 +61,8 @@ class _MyAppState extends State<MyApp> {
 
     if (authorizationStatus == AuthorizationStatus.authorized) {
       try {
-        playedSongs = await FlutterMPMediaPlayer.getRecentTracks();
+        playedSongs =
+            await FlutterMPMediaPlayer.getRecentTracks(limit: 20, page: 1);
       } on PlatformException {
         _error = 'Failed to get played songs.';
       }

@@ -50,7 +50,7 @@ class FlutterMPMediaPlayer {
 
   static Future<Artist> getArtist(String artistId) async {
     final jsonString =
-    await _channel.invokeMethod<String>('getArtist', {'id': artistId});
+        await _channel.invokeMethod<String>('getArtist', {'id': artistId});
 
     if (jsonString == null) {
       throw PlatformException(code: 'NULL_RESPONSE');
@@ -149,9 +149,13 @@ class FlutterMPMediaPlayer {
   ///
   /// If [after] is specified, only songs that were last played after [after]
   /// will be returned.
-  static Future<List<PlayedSong>> getRecentTracks({DateTime? after}) async {
-    final jsonString = await _channel.invokeMethod<String>(
-        'getRecentTracks', {'after': after?.millisecondsSinceEpoch});
+  static Future<List<PlayedSong>> getRecentTracks({
+    DateTime? after,
+    required int limit,
+    required int page,
+  }) async {
+    final jsonString = await _channel.invokeMethod<String>('getRecentTracks',
+        {'after': after?.millisecondsSinceEpoch, 'limit': limit, 'page': page});
 
     if (jsonString == null) {
       throw PlatformException(code: "NULL_RESPONSE");

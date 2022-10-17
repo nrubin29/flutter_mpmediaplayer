@@ -47,6 +47,7 @@ private struct Playlist : Encodable {
 }
 
 private struct SearchRequest {
+    let args: [String: Any]
     let query: String?
     let artistId: MPMediaEntityPersistentID?
     let limit: Int
@@ -57,6 +58,7 @@ private struct SearchRequest {
             return nil
         }
         
+        self.args = args
         self.query = query
         self.limit = limit
         self.page = page
@@ -278,9 +280,14 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
         }
         
         else if call.method == "getRecentTracks" {
+            guard let request = SearchRequest(call.arguments) else {
+                result(FlutterError(code: "BAD_CALL", message: "Bad call", details: nil))
+                return
+            }
+
             var after: Date?
             
-            if let args = call.arguments as? [String: Any], let afterMillis = args["after"] as? Double {
+            if let afterMillis = request.args["after"] as? Double {
                 after = Date(timeIntervalSince1970: afterMillis / 1000)
             }
             
@@ -290,7 +297,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
                 item.title != nil && item.artist != nil && item.lastPlayedDate != nil && (after == nil || item.lastPlayedDate! > after!)
             }.sorted { a, b in
                 a.lastPlayedDate!.compare(b.lastPlayedDate!) == .orderedDescending
-            }.map { item in
+            }.getPage(request.limit, request.page).map { item in
                 PlayedSong(title: item.title!, artist: item.artist!, album: item.albumTitle, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low), lastPlayedDate: item.lastPlayedDate!)
             }
             

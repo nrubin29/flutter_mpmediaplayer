@@ -1,3 +1,7 @@
+## 0.2.0
+
+**BREAKING**: `getRecentTracks()` is now a paged request.
+
 ## 0.1.2
 
 Fixed `PlayedSong` missing `playbackDuration` and `artwork`.
