@@ -5,6 +5,7 @@ private struct PlayedSong : Encodable {
     let title: String
     let artist: String
     let album: String?
+    let albumArtist: String?
     let playbackDuration: String
     let artwork: String?
     let lastPlayedDate: Date
@@ -14,6 +15,7 @@ private struct Song : Encodable {
     let title: String
     let artist: String
     let album: String?
+    let albumArtist: String?
     let playbackDuration: String
     let artwork: String?
 }
@@ -133,7 +135,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let mpAlbum = query.collections!.first!.representativeItem!
             let mpTracks = query.items!
             
-            let tracks = mpTracks.map {item in Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: String(item.playbackDuration), artwork: nil)}
+            let tracks = mpTracks.map {item in Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, albumArtist: item.albumArtist, playbackDuration: String(item.playbackDuration), artwork: nil)}
             
             let album = FullAlbum(id: String(mpAlbum.albumPersistentID), title: mpAlbum.albumTitle!, artist: mpAlbum.artist!, artistId: String(mpAlbum.artistPersistentID), artwork: mpAlbum.artworkData(ImageQuality.high), tracks: tracks)
             
@@ -173,7 +175,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             query.addFilterPredicate(MPMediaPropertyPredicate(value: MPMediaEntityPersistentID(request.query!), forProperty: MPMediaPlaylistPropertyPersistentID, comparisonType: .equalTo))
             
             let items = query.items!.getPage(request.limit, request.page).map { item in
-                Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low))
+                Song(title: item.title!, artist: item.artist!, album: item.albumTitle!, albumArtist: item.albumArtist, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low))
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
@@ -202,7 +204,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             let items = query.items!.getPage(request.limit, request.page).filter { item in
                 item.title != nil && item.artist != nil
             }.map { item in
-                Song(title: item.title!, artist: item.artist!, album: item.albumTitle, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low))
+                Song(title: item.title!, artist: item.artist!, album: item.albumTitle, albumArtist: item.albumArtist, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low))
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)
@@ -298,7 +300,7 @@ public class SwiftFlutterMPMediaPlayerPlugin: NSObject, FlutterPlugin {
             }.sorted { a, b in
                 a.lastPlayedDate!.compare(b.lastPlayedDate!) == .orderedDescending
             }.getPage(request.limit, request.page).map { item in
-                PlayedSong(title: item.title!, artist: item.artist!, album: item.albumTitle, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low), lastPlayedDate: item.lastPlayedDate!)
+                PlayedSong(title: item.title!, artist: item.artist!, album: item.albumTitle, albumArtist: item.albumArtist, playbackDuration: String(item.playbackDuration), artwork: item.artworkData(ImageQuality.low), lastPlayedDate: item.lastPlayedDate!)
             }
             
             let jsonData = try! SwiftFlutterMPMediaPlayerPlugin.jsonEncoder.encode(items)

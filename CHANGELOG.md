@@ -1,3 +1,7 @@
+## 0.3.0
+
+Added `albumArtist` field to `Song` and `PlayedSong`.
+
 ## 0.2.0
 
 **BREAKING**: `getRecentTracks()` is now a paged request.

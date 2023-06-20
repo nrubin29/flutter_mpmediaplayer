@@ -12,6 +12,7 @@ class Song {
   final String title;
   final String artist;
   final String? album;
+  final String? albumArtist;
   final double playbackDuration;
   final Uint8List? artwork;
 
@@ -19,6 +20,7 @@ class Song {
     this.title, {
     required this.artist,
     this.album,
+    this.albumArtist,
     required this.playbackDuration,
     this.artwork,
   });
@@ -27,6 +29,7 @@ class Song {
       : title = json['title'] as String,
         artist = json['artist'] as String,
         album = json['album'] as String?,
+        albumArtist = json['albumArtist'] as String?,
         playbackDuration = double.parse(json['playbackDuration'] as String),
         artwork = _decodeData(json['artwork'] as String?);
 }
@@ -38,12 +41,14 @@ class PlayedSong extends Song {
     String title, {
     required String artist,
     String? album,
+    String? albumArtist,
     required double playbackDuration,
     Uint8List? artwork,
     required this.lastPlayedDate,
   }) : super(title,
             artist: artist,
             album: album,
+            albumArtist: albumArtist,
             playbackDuration: playbackDuration,
             artwork: artwork);
 
