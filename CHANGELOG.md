@@ -1,6 +1,7 @@
 ## 0.3.0
 
-Added `albumArtist` field to `Song` and `PlayedSong`.
+* Added `albumArtist` field to `Song` and `PlayedSong`.
+* Updated to Flutter 3.10
 
 ## 0.2.0
 
