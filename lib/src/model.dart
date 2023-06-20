@@ -16,15 +16,6 @@ class Song {
   final double playbackDuration;
   final Uint8List? artwork;
 
-  const Song(
-    this.title, {
-    required this.artist,
-    this.album,
-    this.albumArtist,
-    required this.playbackDuration,
-    this.artwork,
-  });
-
   Song.fromJson(dynamic json)
       : title = json['title'] as String,
         artist = json['artist'] as String,
@@ -36,21 +27,6 @@ class Song {
 
 class PlayedSong extends Song {
   final DateTime lastPlayedDate;
-
-  const PlayedSong(
-    String title, {
-    required String artist,
-    String? album,
-    String? albumArtist,
-    required double playbackDuration,
-    Uint8List? artwork,
-    required this.lastPlayedDate,
-  }) : super(title,
-            artist: artist,
-            album: album,
-            albumArtist: albumArtist,
-            playbackDuration: playbackDuration,
-            artwork: artwork);
 
   PlayedSong.fromJson(dynamic json)
       : lastPlayedDate = DateTime.fromMillisecondsSinceEpoch(
@@ -65,14 +41,6 @@ class Album {
   final String artistId;
   final Uint8List? artwork;
 
-  const Album(
-    this.title, {
-    required this.id,
-    required this.artist,
-    required this.artistId,
-    this.artwork,
-  });
-
   Album.fromJson(dynamic json)
       : title = json['title'] as String,
         id = json['id'] as String,
@@ -83,16 +51,6 @@ class Album {
 
 class FullAlbum extends Album {
   final List<Song> tracks;
-
-  const FullAlbum(
-    String title, {
-    required String id,
-    required String artist,
-    required String artistId,
-    Uint8List? artwork,
-    required this.tracks,
-  }) : super(title,
-            id: id, artist: artist, artistId: artistId, artwork: artwork);
 
   FullAlbum.fromJson(dynamic json)
       : tracks = (json['tracks'] as List<dynamic>)
@@ -106,8 +64,6 @@ class Artist {
   final String name;
   final Uint8List? artwork;
 
-  const Artist(this.name, {required this.id, this.artwork});
-
   Artist.fromJson(dynamic json)
       : name = json['name'] as String,
         id = json['id'] as String,
@@ -117,8 +73,6 @@ class Artist {
 class Playlist {
   final String id;
   final String title;
-
-  const Playlist(this.id, this.title);
 
   Playlist.fromJson(dynamic json)
       : id = json['id'] as String,

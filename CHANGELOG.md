@@ -2,6 +2,8 @@
 
 * Added `albumArtist` field to `Song` and `PlayedSong`.
 * Updated to Flutter 3.10
+* **BREAKING**: Removed unnamed constructors from model classes. These were never used in internal code and should never
+  have been used in external code.
 
 ## 0.2.0
 
